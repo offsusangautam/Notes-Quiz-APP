@@ -1,49 +1,58 @@
-import asyncHandler from 'express-async-handler';
-import User from '../models/User.js';
-import generateToken from '../utils/generateToken.js';
+import User from "../models/user.js";
+import bcrypt from "bcryptjs";
+import generateToken from "../utils/generateToken.js";
 
-// @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
-export const registerUser = asyncHandler(async (req, res) => {
+export const register = async (req, res) => {
   const { name, email, password, grade, stream } = req.body;
-
-  const userExists = await User.findOne({ email });
-  if (userExists) {
-    res.status(400);
-    throw new Error('User already exists');
+  if (!name || !email || !password || !grade || !stream) {
+    return res.status(400).json({ message: "Please provide all required fields" });
   }
 
-  const user = new User({
-    name,
-    email,
-    passwordHash: password,
-    grade,
-    stream,
-  });
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
-  await user.save();
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
 
-  res.status(201).json({
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    grade: user.grade,
-    stream: user.stream,
-    role: user.role,
-    token: generateToken(user._id)
-  });
-});
+    const user = await User.create({
+      name,
+      email,
+      passwordHash,
+      grade,
+      stream,
+      role: "student",
+    });
 
-// @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
-export const loginUser = asyncHandler(async (req, res) => {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      grade: user.grade,
+      stream: user.stream,
+      role: user.role,
+      token: generateToken(user),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error during registration" });
+  }
+};
+
+export const login = async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please provide email and password" });
+  }
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-  if (user && (await user.matchPassword(password))) {
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -51,30 +60,9 @@ export const loginUser = asyncHandler(async (req, res) => {
       grade: user.grade,
       stream: user.stream,
       role: user.role,
-      token: generateToken(user._id)
+      token: generateToken(user),
     });
-  } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+  } catch (error) {
+    res.status(500).json({ message: "Server error during login" });
   }
-});
-
-// @desc    Get user profile
-// @route   GET /api/auth/profile
-// @access  Private
-export const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (user) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      grade: user.grade,
-      stream: user.stream,
-      role: user.role,
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
-});
+};

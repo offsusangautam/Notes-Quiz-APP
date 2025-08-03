@@ -1,35 +1,117 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import StudentDashboard from "./pages/StudentDashboard";
+import Notes from "./pages/Notes";
+import NoteView from "./pages/NoteView";
+import Quiz from "./pages/Quiz";
+import QuizAttempt from "./pages/QuizAttempt";
+
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminManageNotes from "./pages/AdminManageNotes";
+import AdminManageQuizzes from "./pages/AdminManageQuizzes";
+import AdminManageUsers from "./pages/AdminManageUsers";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import QuizReviewPage from "./pages/QuizReviewPage";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Student Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute role="student">
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute role="student">
+              <Notes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes/:id"
+          element={
+            <ProtectedRoute role="student">
+              <NoteView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoute role="student">
+              <Quiz />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/attempt/:id"
+          element={
+            <ProtectedRoute role="student">
+              <QuizAttempt />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/review/:id"
+          element={
+            <ProtectedRoute role="student">
+              <QuizReviewPage/>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Protected Routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/notes"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminManageNotes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/quizzes"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminManageQuizzes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminManageUsers />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

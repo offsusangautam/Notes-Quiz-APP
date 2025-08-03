@@ -1,10 +1,10 @@
-import asyncHandler from 'express-async-handler';
-import User from '../models/User.js';
+import User from "../models/user.js";
 
-// @desc    Get all users (admin only)
-// @route   GET /api/users
-// @access  Private/Admin
-export const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select('-passwordHash').sort({ createdAt: -1 });
-  res.json(users);
-});
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: "student" }).select("-passwordHash").sort({ createdAt: -1 });
+    res.json(users);
+  } catch {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};

@@ -5,7 +5,7 @@ import {
   createQuiz,
   updateQuiz,
   deleteQuiz
-} from '../controllers/quizController.js';
+} from '../controllers/quizzesController.js';
 import { protect, admin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();

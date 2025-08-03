@@ -1,75 +1,56 @@
-import asyncHandler from 'express-async-handler';
-import Note from '../models/Note.js';
+const Note = require("../models/note");
 
-// @desc    Get notes filtered by query
-// @route   GET /api/notes?grade=&stream=&subject=
-// @access  Private
-export const getNotes = asyncHandler(async (req, res) => {
-  const { grade, stream, subject } = req.query;
-  const query = {};
-  if (grade) query.grade = grade;
-  if (stream) query.stream = stream;
-  if (subject) query.subject = subject;
+exports.getNotes = async (req, res) => {
+  const { grade, stream, subject, chapter } = req.query;
+  const filter = {};
+  if (grade) filter.grade = grade;
+  if (stream) filter.stream = stream;
+  if (subject) filter.subject = subject;
+  if (chapter) filter.chapter = chapter;
 
-  const notes = await Note.find(query).sort({ createdAt: -1 });
-  res.json(notes);
-});
-
-// @desc    Get note by id
-// @route   GET /api/notes/:id
-// @access  Private
-export const getNoteById = asyncHandler(async (req, res) => {
-  const note = await Note.findById(req.params.id);
-  if (note) res.json(note);
-  else {
-    res.status(404);
-    throw new Error('Note not found');
+  try {
+    const notes = await Note.find(filter).sort({ createdAt: -1 });
+    res.json(notes);
+  } catch {
+    res.status(500).json({ message: "Failed to fetch notes" });
   }
-});
+};
 
-// @desc    Create note
-// @route   POST /api/notes
-// @access  Private/Admin
-export const createNote = asyncHandler(async (req, res) => {
-  const { grade, stream, subject, chapter, content } = req.body;
-
-  const note = new Note({ grade, stream, subject, chapter, content });
-  const createdNote = await note.save();
-  res.status(201).json(createdNote);
-});
-
-// @desc    Update note
-// @route   PUT /api/notes/:id
-// @access  Private/Admin
-export const updateNote = asyncHandler(async (req, res) => {
-  const { grade, stream, subject, chapter, content } = req.body;
-
-  const note = await Note.findById(req.params.id);
-  if (note) {
-    note.grade = grade || note.grade;
-    note.stream = stream || note.stream;
-    note.subject = subject || note.subject;
-    note.chapter = chapter || note.chapter;
-    note.content = content || note.content;
-
-    const updatedNote = await note.save();
-    res.json(updatedNote);
-  } else {
-    res.status(404);
-    throw new Error('Note not found');
+exports.getNoteById = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).json({ message: "Note not found" });
+    res.json(note);
+  } catch {
+    res.status(500).json({ message: "Failed to fetch note" });
   }
-});
+};
 
-// @desc    Delete note
-// @route   DELETE /api/notes/:id
-// @access  Private/Admin
-export const deleteNote = asyncHandler(async (req, res) => {
-  const note = await Note.findById(req.params.id);
-  if (note) {
-    await note.remove();
-    res.json({ message: 'Note removed' });
-  } else {
-    res.status(404);
-    throw new Error('Note not found');
+exports.createNote = async (req, res) => {
+  try {
+    const note = await Note.create(req.body);
+    res.status(201).json(note);
+  } catch {
+    res.status(500).json({ message: "Failed to create note" });
   }
-});
+};
+
+exports.updateNote = async (req, res) => {
+  try {
+    const note = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!note) return res.status(404).json({ message: "Note not found" });
+    res.json(note);
+  } catch {
+    res.status(500).json({ message: "Failed to update note" });
+  }
+};
+
+exports.deleteNote = async (req, res) => {
+  try {
+    const note = await Note.findByIdAndDelete(req.params.id);
+    if (!note) return res.status(404).json({ message: "Note not found" });
+    res.json({ message: "Note deleted" });
+  } catch {
+    res.status(500).json({ message: "Failed to delete note" });
+  }
+};
