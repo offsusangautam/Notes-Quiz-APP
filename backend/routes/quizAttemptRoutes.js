@@ -1,20 +1,19 @@
 import express from 'express';
 import {
-  submitQuizAttempt,
-  getUserQuizAttempts,
+  createQuizAttempt,
+  getQuizAttempts,
   getQuizAttemptById,
-  getAllQuizAttempts
 } from '../controllers/quizAttemptController.js';
 import { protect, admin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-  .post(protect, submitQuizAttempt)
-  .get(protect, admin, getAllQuizAttempts);
+  .post(protect, createQuizAttempt)
+  .get(protect, admin, getQuizAttempts);
 
 router.route('/user')
-  .get(protect, getUserQuizAttempts);
+  .get(protect, getQuizAttempts); // students get their own attempts here
 
 router.route('/:id')
   .get(protect, getQuizAttemptById);
