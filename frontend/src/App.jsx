@@ -71,7 +71,7 @@ function App() {
           path="/quiz/review/:id"
           element={
             <ProtectedRoute role="student">
-              <QuizReviewPage/>
+              <QuizReviewPage />
             </ProtectedRoute>
           }
         />
