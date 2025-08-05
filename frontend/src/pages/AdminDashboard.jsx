@@ -4,6 +4,17 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      
+      <div className="mb-8 p-4 bg-gray-50 rounded border">
+        <h2 className="text-xl font-semibold mb-2">Admin Features</h2>
+        <div className="text-gray-700">
+          <p className="mb-2"><strong>Admin Login</strong> - Admin can log in securely and access admin-only routes.</p>
+          <p className="mb-2"><strong>Manage Notes</strong> - Admin can Add, Edit, and Delete Notes. Use a rich text editor (like React Quill) for adding formatted content. Upload or embed images/diagrams if needed.</p>
+          <p className="mb-2"><strong>Manage Quizzes</strong> - Admin can Add, Edit, Delete Quizzes. Each quiz entry includes: Grade, Stream, Subject, Chapter List of MCQs with correct answer and explanation.</p>
+          <p className="mb-2"><strong>Manage Users & Attempts</strong> - View list of all registered students. Filter quiz attempts by grade, subject, or user.</p>
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
           to="/admin/notes"

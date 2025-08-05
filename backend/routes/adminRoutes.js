@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, isAdmin } from '../middleware/authMiddleware.js';
+import { protect, admin } from '../middlewares/authMiddleware.js';
 import {
   uploadQuiz,
   uploadNote,
@@ -9,10 +9,9 @@ import {
 
 const router = express.Router();
 
-router.post('/upload-quiz', protect, isAdmin, uploadQuiz);
-router.post('/upload-note', protect, isAdmin, uploadNote);
-router.get('/users', protect, isAdmin, getAllUsers);
-router.get('/attempts', getAllAttempts);
-router.post('/admin/notes', protect, admin, uploadNote);
+router.post('/upload-quiz', protect, admin, uploadQuiz);
+router.post('/upload-note', protect, admin, uploadNote);
+router.get('/users', protect, admin, getAllUsers);
+router.get('/attempts', protect, admin, getAllQuizAttempts);
 
 export default router;

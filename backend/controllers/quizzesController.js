@@ -39,7 +39,8 @@ export const createQuiz = async (req, res) => {
     const quiz = new Quiz({ grade, stream, subject, chapter, questions });
     await quiz.save();
     res.status(201).json(quiz);
-  } catch {
+  } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(500).json({ message: "Failed to create quiz" });
   }
 };

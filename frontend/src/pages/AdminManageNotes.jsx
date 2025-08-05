@@ -9,6 +9,7 @@ export default function AdminManageNotes() {
   const [loading, setLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
   const [form, setForm] = useState({
+    title: "",
     grade: "10",
     stream: "Science",
     subject: "",
@@ -33,6 +34,7 @@ export default function AdminManageNotes() {
   const startEdit = (note) => {
     setEditingNote(note);
     setForm({
+      title: note.title,
       grade: note.grade,
       stream: note.stream,
       subject: note.subject,
@@ -44,6 +46,7 @@ export default function AdminManageNotes() {
   const resetForm = () => {
     setEditingNote(null);
     setForm({
+      title: "",
       grade: "10",
       stream: "Science",
       subject: "",
@@ -53,7 +56,7 @@ export default function AdminManageNotes() {
   };
 
   const handleSave = async () => {
-    if (!form.subject || !form.chapter) {
+    if (!form.title || !form.subject || !form.chapter || !form.content) {
       alert("Please fill all required fields");
       return;
     }
@@ -132,6 +135,15 @@ export default function AdminManageNotes() {
         <h2 className="text-xl font-semibold mb-4">
           {editingNote ? "Edit Note" : "Add New Note"}
         </h2>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Note Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            className="border p-2 rounded w-full mb-4"
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <select
             value={form.grade}

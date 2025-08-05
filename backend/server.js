@@ -7,6 +7,7 @@ import notesRoutes from './routes/notesRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import quizAttemptRoutes from './routes/quizAttemptRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -22,6 +23,7 @@ app.use('/api/notes', notesRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/quiz-attempts', quizAttemptRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
