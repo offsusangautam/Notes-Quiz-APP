@@ -1,4 +1,4 @@
-import QuizAttempt from '../models/quizAttempt.js'; // Make sure this model exists and is named correctly
+import QuizAttempt from '../models/quizattempt.js'; // Make sure this model exists and is named correctly
 
 export const createQuizAttempt = async (req, res) => {
   const {

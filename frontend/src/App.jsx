@@ -3,9 +3,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import StudentDashboard from "./pages/StudentDashboard";
+import GradeSelection from "./pages/GradeSelection";
+import GradeContent from "./pages/GradeContent";
 import Notes from "./pages/Notes";
+import GradeNotes from "./pages/GradeNotes";
 import NoteView from "./pages/NoteView";
 import Quiz from "./pages/Quiz";
+import GradeQuizzes from "./pages/GradeQuizzes";
 import QuizAttempt from "./pages/QuizAttempt";
 
 import AdminDashboard from "./pages/AdminDashboard";
@@ -28,10 +32,34 @@ function App() {
 
         {/* Student Protected Routes */}
         <Route
+          path="/grades"
+          element={
+            <ProtectedRoute role="student">
+              <GradeSelection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/grades/:grade"
+          element={
+            <ProtectedRoute role="student">
+              <GradeContent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute role="student">
               <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/grades/:grade/notes"
+          element={
+            <ProtectedRoute role="student">
+              <GradeNotes />
             </ProtectedRoute>
           }
         />
@@ -48,6 +76,14 @@ function App() {
           element={
             <ProtectedRoute role="student">
               <NoteView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/grades/:grade/quizzes"
+          element={
+            <ProtectedRoute role="student">
+              <GradeQuizzes />
             </ProtectedRoute>
           }
         />

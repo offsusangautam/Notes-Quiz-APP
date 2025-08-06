@@ -4,20 +4,25 @@ import User from '../models/user.js';
 import QuizAttempt from '../models/quizattempt.js';
 
 export const uploadQuiz = async (req, res) => {
-  const { question, options, correctAnswer, grade, subject } = req.body;
+  const { grade, stream, subject, chapter, questions } = req.body;
+
+  if (!grade || !stream || !subject || !chapter || !questions || !questions.length) {
+    return res.status(400).json({ message: 'Please provide all required fields' });
+  }
 
   try {
     const quiz = await Quiz.create({
-      question,
-      options,
-      correctAnswer,
       grade,
+      stream,
       subject,
+      chapter,
+      questions,
       createdBy: req.user._id,
     });
 
     res.status(201).json({ message: 'Quiz uploaded successfully', quiz });
   } catch (err) {
+    console.error('Error uploading quiz:', err);
     res.status(500).json({ message: 'Error uploading quiz', error: err.message });
   }
 };

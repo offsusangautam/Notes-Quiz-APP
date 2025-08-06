@@ -21,6 +21,9 @@ export default function Navbar() {
             <Link to="/dashboard" className="hover:underline">
               Dashboard
             </Link>
+            <Link to="/grades" className="hover:underline">
+              Grades
+            </Link>
             {user.role === "admin" && (
               <Link to="/admin" className="hover:underline">
                 Admin

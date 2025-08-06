@@ -22,7 +22,7 @@ const createUsers = async () => {
     const admin = new User({
       name: "Admin User",
       email: "admin@example.com",
-      passwordHash: "admin123",  // will be hashed by pre-save hook
+      passwordHash: "admin123",
       grade: 12,
       stream: "Science",
       role: "admin",

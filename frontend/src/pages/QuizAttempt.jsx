@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -7,20 +7,44 @@ export default function QuizAttempt() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
+  const [allQuizzes, setAllQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    api
-      .get(`/quizzes/${id}`)
-      .then((res) => setQuiz(res.data))
-      .catch(() => alert("Failed to load quiz"))
-      .finally(() => setLoading(false));
+    const fetchQuizAndRelated = async () => {
+      setLoading(true);
+      try {
+        const quizRes = await api.get(`/quizzes/${id}`);
+        const currentQuiz = quizRes.data;
+        setQuiz(currentQuiz);
+
+        const relatedQuizzesRes = await api.get(
+          `/quizzes?grade=${currentQuiz.grade}&stream=${currentQuiz.stream}&subject=${currentQuiz.subject}`
+        );
+        setAllQuizzes(relatedQuizzesRes.data);
+      } catch (error) {
+        console.error("Failed to load quiz or related quizzes:", error);
+        alert("Failed to load quiz.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuizAndRelated();
   }, [id]);
 
   if (loading) return <LoadingSpinner />;
   if (!quiz) return <p>Quiz not found.</p>;
+
+  const currentQuizIndex = allQuizzes.findIndex((q) => q._id === quiz._id);
+  const nextQuiz = allQuizzes[currentQuizIndex + 1];
+
+  const handleNextQuiz = () => {
+    if (nextQuiz) {
+      navigate(`/quiz/attempt/${nextQuiz._id}`);
+    }
+  };
 
   const handleChange = (questionIdx, optionIdx) => {
     setAnswers((prev) => ({ ...prev, [questionIdx]: optionIdx }));
@@ -104,6 +128,15 @@ export default function QuizAttempt() {
         >
           {submitting ? "Submitting..." : "Submit Quiz"}
         </button>
+        {nextQuiz && (
+          <button
+            type="button"
+            onClick={handleNextQuiz}
+            className="ml-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+          >
+            Next Quiz
+          </button>
+        )}
       </form>
     </div>
   );

@@ -83,6 +83,21 @@ export default function AdminManageQuizzes() {
       alert("Please add at least one question");
       return;
     }
+
+    // Validate that all question fields and options are filled
+    for (const question of form.questions) {
+      if (!question.question.trim()) {
+        alert("Please fill in all question texts.");
+        return;
+      }
+      for (let i = 0; i < question.options.length; i++) {
+        if (!question.options[i].trim()) {
+          alert(`Please fill in all options for question ${form.questions.indexOf(question) + 1}, option ${i + 1}.`);
+          return;
+        }
+      }
+    }
+    console.log("Form data before saving:", form);
     setSaving(true);
     try {
       if (editingQuiz) {
@@ -215,15 +230,15 @@ export default function AdminManageQuizzes() {
             <div className="grid grid-cols-2 gap-2 mb-2">
               {q.options.map((opt, optIdx) => (
                 <input
-                  key={optIdx}
-                  type="text"
-                  placeholder={`Option ${optIdx + 1}`}
-                  value={opt}
-                  onChange={(e) =>
-                    handleQuestionChange(idx, `option${optIdx}`, e.target.value)
-                  }
-                  className="border p-2 rounded"
-                />
+                    type="text"
+                    placeholder={`Option ${optIdx + 1}`}
+                    value={opt}
+                    onChange={(e) =>
+                      handleQuestionChange(idx, `option${optIdx}`, e.target.value)
+                    }
+                    className="border p-2 rounded w-full"
+                    required
+                  />
               ))}
             </div>
             <div className="mb-2">

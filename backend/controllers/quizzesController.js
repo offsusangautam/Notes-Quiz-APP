@@ -36,21 +36,41 @@ export const createQuiz = async (req, res) => {
   }
 
   try {
-    const quiz = new Quiz({ grade, stream, subject, chapter, questions });
+    console.log("Received questions:", questions);
+    const quiz = new Quiz({
+      grade,
+      stream,
+      subject,
+      chapter,
+      questions,
+      createdBy: req.user._id // Add the authenticated user's ID
+    });
+    console.log("Quiz object before saving:", quiz);
     await quiz.save();
     res.status(201).json(quiz);
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error("Error creating quiz:", error); // Log the error for debugging
     res.status(500).json({ message: "Failed to create quiz" });
   }
 };
 
 export const updateQuiz = async (req, res) => {
+  const { grade, stream, subject, chapter, questions } = req.body;
+
+  if (!grade || !stream || !subject || !chapter || !questions) {
+    return res.status(400).json({ message: "Please provide all fields" });
+  }
+
   try {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
-    Object.assign(quiz, req.body);
+    // Update quiz fields
+    quiz.grade = grade;
+    quiz.stream = stream;
+    quiz.subject = subject;
+    quiz.chapter = chapter;
+    quiz.questions = questions;
     await quiz.save();
     res.json(quiz);
   } catch {
@@ -63,9 +83,10 @@ export const deleteQuiz = async (req, res) => {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
-    await quiz.remove();
+    await Quiz.deleteOne({ _id: req.params.id });
     res.json({ message: "Quiz deleted" });
-  } catch {
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
     res.status(500).json({ message: "Failed to delete quiz" });
   }
 };
