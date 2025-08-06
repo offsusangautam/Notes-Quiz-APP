@@ -46,45 +46,72 @@ export default function QuizAttempt() {
     }
   };
 
-  const handleChange = (questionIdx, optionIdx) => {
-    setAnswers((prev) => ({ ...prev, [questionIdx]: optionIdx }));
+  const handleChange = (questionId, selectedIndex) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: selectedIndex,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const unanswered = quiz.questions.filter(
+      (q) => answers[q._id] === undefined
+    );
+    if (unanswered.length > 0) {
+      alert(`Please answer all questions (${unanswered.length} unanswered)`);
+      return;
+    }
+
     const totalQuestions = quiz.questions.length;
     let correctAnswersCount = 0;
-    const answerLog = [];
 
-    quiz.questions.forEach((q, i) => {
-      const selected = answers[i];
+    const answerLog = quiz.questions.map((q) => {
+      const selected = answers[q._id];
       const isCorrect = selected === q.answer;
       if (isCorrect) correctAnswersCount++;
-      answerLog.push({
-        question: q.question,
+
+      return {
+        questionId: q._id,
         selectedOption: selected,
-        correctOption: q.answer,
-        explanation: q.explanation,
-      });
+        isCorrect,
+      };
     });
+
+    const payload = {
+      quizId: id,
+      subject: quiz.subject,
+      grade: quiz.grade,
+      stream: quiz.stream,
+      totalQuestions,
+      correctAnswers: correctAnswersCount,
+      answers: answerLog,
+    };
+
+    console.log("Submission Payload:", payload);
 
     setSubmitting(true);
 
     try {
-      await api.post("/quizattempt", {
-        quizId: id,
-        subject: quiz.subject,
-        grade: quiz.grade,
-        stream: quiz.stream,
-        totalQuestions,
-        correctAnswers: correctAnswersCount,
-        answers: answerLog,
-      });
-
+      await api.post("/quiz-attempts", payload);
       alert(`Quiz submitted! Score: ${correctAnswersCount}/${totalQuestions}`);
-      navigate("/dashboard");
-    } catch {
-      alert("Failed to submit quiz.");
+      navigate("/dashboard", {
+        state: {
+          showScore: true,
+          scoreData: {
+            correctAnswers: correctAnswersCount,
+            totalQuestions,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Submission Error:", error.response?.data || error.message);
+      alert(
+        `Submission failed: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     } finally {
       setSubmitting(false);
     }
@@ -98,7 +125,7 @@ export default function QuizAttempt() {
         </h1>
         <form onSubmit={handleSubmit} className="space-y-8">
           {quiz.questions.map((q, idx) => (
-            <div key={idx} className="card p-6 hover:border-indigo-200">
+            <div key={q._id} className="card p-6 hover:border-indigo-200">
               <p className="text-xl font-semibold mb-4 text-gray-800">
                 Q{idx + 1}. {q.question}
               </p>
@@ -110,10 +137,10 @@ export default function QuizAttempt() {
                   >
                     <input
                       type="radio"
-                      name={`question-${idx}`}
+                      name={`question-${q._id}`}
                       value={optIdx}
-                      checked={answers[idx] === optIdx}
-                      onChange={() => handleChange(idx, optIdx)}
+                      checked={answers[q._id] === optIdx}
+                      onChange={() => handleChange(q._id, optIdx)}
                       required
                       className="form-radio h-5 w-5 text-indigo-600"
                     />

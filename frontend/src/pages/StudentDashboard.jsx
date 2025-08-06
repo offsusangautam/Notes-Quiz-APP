@@ -2,8 +2,18 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Link } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 export default function StudentDashboard() {
+  const location = useLocation();
+  const [showScore, setShowScore] = useState(location.state?.showScore || false);
+
+  useEffect(() => {
+    if (location.state?.showScore) {
+      setTimeout(() => setShowScore(false), 5000); // Auto-hide after 5sec
+    }
+  }, [location.state]);
+
   const [attempts, setAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +69,14 @@ export default function StudentDashboard() {
           </tbody>
         </table>
       )}
+      
+      {showScore && (
+        <div className="bg-green-100 p-4 rounded mb-4">
+          <h3 className="font-bold">
+            Quiz Results: {location.state.scoreData.correctAnswers}/{location.state.scoreData.totalQuestions}
+          </h3>
+        </div>
+      )}
     </div>
   );
-}
+};

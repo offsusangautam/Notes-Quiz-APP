@@ -39,7 +39,12 @@ export const createQuizAttempt = async (req, res) => {
     await attempt.save();
     res.status(201).json(attempt);
   } catch (error) {
-    res.status(500).json({ message: "Failed to save quiz attempt" });
+    console.error('Save Error:', error);
+    res.status(500).json({ 
+      message: error.message.includes('validation') 
+        ? 'Validation failed: ' + error.message
+        : 'Failed to save quiz attempt'
+    });
   }
 };
 
