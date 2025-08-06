@@ -92,52 +92,57 @@ export default function QuizAttempt() {
 
   return (
     <div className="max-w-4xl mx-auto mt-8 p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        {quiz.subject} - Chapter: {quiz.chapter}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {quiz.questions.map((q, idx) => (
-          <div key={idx} className="border p-4 rounded">
-            <p className="font-semibold mb-2">
-              Q{idx + 1}. {q.question}
-            </p>
-            <div className="space-y-1">
-              {q.options.map((opt, optIdx) => (
-                <label
-                  key={optIdx}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name={`question-${idx}`}
-                    value={optIdx}
-                    checked={answers[idx] === optIdx}
-                    onChange={() => handleChange(idx, optIdx)}
-                    required
-                  />
-                  <span>{opt}</span>
-                </label>
-              ))}
+      <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">
+          {quiz.subject} - Chapter: {quiz.chapter}
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {quiz.questions.map((q, idx) => (
+            <div key={idx} className="card p-6 hover:border-indigo-200">
+              <p className="text-xl font-semibold mb-4 text-gray-800">
+                Q{idx + 1}. {q.question}
+              </p>
+              <div className="space-y-3">
+                {q.options.map((opt, optIdx) => (
+                  <label
+                    key={optIdx}
+                    className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name={`question-${idx}`}
+                      value={optIdx}
+                      checked={answers[idx] === optIdx}
+                      onChange={() => handleChange(idx, optIdx)}
+                      required
+                      className="form-radio h-5 w-5 text-indigo-600"
+                    />
+                    <span className="ml-3 text-gray-700">{opt}</span>
+                  </label>
+                ))}
+              </div>
             </div>
+          ))}
+          <div className="flex space-x-4 mt-8">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-primary flex-1"
+            >
+              {submitting ? "Submitting..." : "Submit Quiz"}
+            </button>
+            {nextQuiz && (
+              <button
+                type="button"
+                onClick={handleNextQuiz}
+                className="btn-secondary flex-1"
+              >
+                Next Quiz
+              </button>
+            )}
           </div>
-        ))}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {submitting ? "Submitting..." : "Submit Quiz"}
-        </button>
-        {nextQuiz && (
-          <button
-            type="button"
-            onClick={handleNextQuiz}
-            className="ml-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-          >
-            Next Quiz
-          </button>
-        )}
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
