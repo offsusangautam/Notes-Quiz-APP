@@ -19,6 +19,7 @@ import AdminManageUsers from "./pages/AdminManageUsers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import QuizReviewPage from "./pages/QuizReviewPage";
+import AdminQuizAttempts from "./pages/AdminQuizAttemps";
 
 function App() {
   return (
@@ -145,7 +146,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+    path="/admin/quiz-attempts"
+    element={
+      <ProtectedRoute role="admin">
+        <AdminQuizAttempts />
+      </ProtectedRoute>
+    }
+  />
       </Routes>
+      
+
     </Router>
   );
 }

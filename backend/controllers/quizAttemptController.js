@@ -71,18 +71,64 @@ export const getQuizAttempts = async (req, res) => {
 
 export const getQuizAttemptById = async (req, res) => {
   try {
-    const attempt = await QuizAttempt.findById(req.params.id).populate(
-      "userId",
-      "name email"
-    );
+    console.time("fetchAttempt");
+    const attempt = await QuizAttempt.findById(req.params.id)
+      .populate("userId", "name")
+      .select("correctAnswers totalQuestions userId");
+
+    console.timeEnd("fetchAttempt");
+
     if (!attempt) return res.status(404).json({ message: "Quiz attempt not found" });
 
-    if (req.user.role === "student" && attempt.userId._id.toString() !== req.user._id.toString()) {
+    if (
+      req.user.role === "student" &&
+      (!attempt.userId || attempt.userId._id.toString() !== req.user._id.toString())
+    ) {
       return res.status(403).json({ message: "Access denied" });
     }
 
     res.json(attempt);
   } catch (error) {
+    console.error("getQuizAttemptById error:", error);
     res.status(500).json({ message: "Failed to fetch quiz attempt" });
+  }
+};
+
+
+export const getAllQuizAttempts = async (req, res) => {
+  try {
+    const filters = {};
+    if (req.query.grade) filters.grade = req.query.grade;
+    if (req.query.subject) filters.subject = req.query.subject;
+    if (req.query.stream) filters.stream = req.query.stream;
+    if (req.query.userId) filters.userId = req.query.userId;
+
+    // Only populate student name
+    const attempts = await QuizAttempt.find(filters)
+      .populate('userId', 'name') // only get the name field from User
+      .select('userId correctAnswers totalQuestions'); // only select needed fields
+
+    // Format response
+    const result = attempts.map(attempt => ({
+      studentName: attempt.userId?.name || 'Unknown',
+      score: `${attempt.correctAnswers}/${attempt.totalQuestions}`,
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch quiz attempts' });
+  }
+};
+
+export const getStudentQuizAttempts = async (req, res) => {
+  try {
+    console.log('User id:', req.user._id);
+    const attempts = await QuizAttempt.find({ userId: req.user._id });
+    console.log('Attempts found:', attempts.length);
+    res.json(attempts);
+  } catch (error) {
+    console.error('Error fetching attempts:', error);
+    res.status(500).json({ message: 'Failed to load quiz attempts' });
   }
 };

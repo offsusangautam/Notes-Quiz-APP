@@ -1,21 +1,24 @@
 import express from 'express';
 import {
   createQuizAttempt,
-  getQuizAttempts,
   getQuizAttemptById,
+  getAllQuizAttempts,     
+  getStudentQuizAttempts,
 } from '../controllers/quizAttemptController.js';
 import { protect, admin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/')
-  .post(protect, createQuizAttempt)
-  .get(protect, admin, getQuizAttempts);
+//  Create a quiz attempt (students)
+router.post('/', protect, createQuizAttempt);
 
-router.route('/user')
-  .get(protect, getQuizAttempts); // students get their own attempts here
+//  Admin: Get all quiz attempts (with optional filters)
+router.get('/', protect, admin, getAllQuizAttempts);
 
-router.route('/:id')
-  .get(protect, getQuizAttemptById);
+//  Student: Get own attempts
+router.get('/user', protect, getStudentQuizAttempts);
+
+//  Get attempt by ID (either student or admin)
+router.get('/:id', protect, getQuizAttemptById);
 
 export default router;
