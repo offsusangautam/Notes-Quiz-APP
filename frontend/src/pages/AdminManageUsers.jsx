@@ -20,7 +20,7 @@ export default function AdminManageUsers() {
   const fetchAttempts = () => {
     setLoadingAttempts(true);
     api
-      .get("/quizattempt", { params: filter })
+      .get("/quiz-attempts", { params: filter })
       .then((res) => setAttempts(res.data))
       .catch(() => alert("Failed to load attempts"))
       .finally(() => setLoadingAttempts(false));

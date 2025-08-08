@@ -14,7 +14,7 @@ export default function Navbar() {
     <nav className="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4">
         <Link to="/" className="font-bold text-2xl tracking-tight hover:text-indigo-200 transition-colors">
-          Notes & Quizzes
+          EduNepal
         </Link>
         <div className="space-x-6">
           {user ? (

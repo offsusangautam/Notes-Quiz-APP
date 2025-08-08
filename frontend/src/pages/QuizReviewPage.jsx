@@ -10,7 +10,7 @@ export default function QuizReviewPage() {
 
   useEffect(() => {
     api
-      .get(`/quizattempt/${id}`)
+      .get(`/quiz-attempts/${id}`)
       .then((res) => setAttempt(res.data))
       .catch(() => alert("Failed to load quiz attempt"))
       .finally(() => setLoading(false));
