@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import api from "../api/api"; // your axios instance without timeout
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Link, useLocation } from "react-router-dom";
+import useAuth from "../hooks/useAuth"
 
 export default function StudentDashboard() {
+  const { user } = useAuth();
   const location = useLocation();
   const [showScore, setShowScore] = useState(location.state?.showScore || false);
   const [attempts, setAttempts] = useState([]);
@@ -41,6 +43,7 @@ export default function StudentDashboard() {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6">
       <h1 className="text-3xl font-bold mb-6">Your Quiz Attempts</h1>
+      <h2 className="text-2xl font-semibold mb-4">Welcome, {user?.name}!</h2>
       {attempts.length === 0 ? (
         <p>No quiz attempts yet.</p>
       ) : (
