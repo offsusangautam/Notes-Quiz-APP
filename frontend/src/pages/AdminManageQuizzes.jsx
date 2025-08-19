@@ -131,162 +131,178 @@ export default function AdminManageQuizzes() {
     <div className="max-w-6xl mx-auto mt-10 p-6">
       <h1 className="text-3xl font-bold mb-6">Manage Quizzes</h1>
 
-      {/* Quiz List */}
+      {/* Quiz List with improved styling */}
       <div className="mb-10">
         {loading ? (
           <LoadingSpinner />
         ) : quizzes.length === 0 ? (
           <p>No quizzes found.</p>
         ) : (
-          <ul className="space-y-4 max-h-64 overflow-auto border p-4 rounded">
-            {quizzes.map((quiz) => (
-              <li
-                key={quiz._id}
-                className="flex justify-between items-center border-b pb-2"
-              >
-                <div>
-                  <strong>{quiz.subject}</strong> - {quiz.chapter} (Grade {quiz.grade},{" "}
-                  {quiz.stream})
-                </div>
-                <div className="space-x-2">
-                  <button
-                    onClick={() => startEdit(quiz)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(quiz._id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="border rounded-lg p-4 max-h-72 overflow-y-auto bg-gray-50">
+            <ul className="space-y-4">
+              {quizzes.map((quiz) => (
+                <li
+                  key={quiz._id}
+                  className="flex justify-between items-center border-b pb-2"
+                >
+                  <div>
+                    <strong>{quiz.subject}</strong> - {quiz.chapter} (Grade {quiz.grade},{" "}
+                    {quiz.stream})
+                  </div>
+                  <div className="space-x-4">
+                    <button
+                      onClick={() => startEdit(quiz)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(quiz._id)}
+                      className="text-red-600 hover:underline font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 
-      {/* Quiz Form */}
-      <div className="border p-4 rounded overflow-auto">
-        <h2 className="text-xl font-semibold mb-4">
+      {/* Main form container */}
+      <div className="bg-white p-6 border rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 border-b pb-4">
           {editingQuiz ? "Edit Quiz" : "Add New Quiz"}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <select
-            value={form.grade}
-            onChange={(e) => setForm({ ...form, grade: e.target.value })}
-            className="border p-2 rounded"
-          >
-            <option value="10">Grade 10</option>
-            <option value="11">Grade 11</option>
-            <option value="12">Grade 12</option>
-          </select>
-          <select
-            value={form.stream}
-            onChange={(e) => setForm({ ...form, stream: e.target.value })}
-            className="border p-2 rounded"
-          >
-            <option value="Science">Science</option>
-            <option value="Management">Management</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Subject"
-            value={form.subject}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-            className="border p-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Chapter"
-            value={form.chapter}
-            onChange={(e) => setForm({ ...form, chapter: e.target.value })}
-            className="border p-2 rounded"
-          />
-        </div>
 
-        <h3 className="text-lg font-semibold mb-2">Questions</h3>
-        {form.questions.map((q, idx) => (
-          <div key={idx} className="mb-6 border p-4 rounded bg-gray-50">
-            <div className="flex justify-between items-center mb-2">
-              <p className="font-semibold">Question {idx + 1}</p>
-              <button
-                onClick={() => removeQuestion(idx)}
-                className="text-red-600 hover:underline"
-                disabled={form.questions.length === 1}
-              >
-                Remove
-              </button>
-            </div>
+        {/* Section 1: Quiz Details */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4 text-gray-700">Quiz Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <input
               type="text"
-              placeholder="Question text"
-              value={q.question}
-              onChange={(e) => handleQuestionChange(idx, "question", e.target.value)}
-              className="border p-2 rounded w-full mb-2"
+              placeholder="Subject"
+              value={form.subject}
+              onChange={(e) => setForm({ ...form, subject: e.target.value })}
+              className="input-field"
             />
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              {q.options.map((opt, optIdx) => (
-                <input
-                    type="text"
-                    placeholder={`Option ${optIdx + 1}`}
-                    value={opt}
-                    onChange={(e) =>
-                      handleQuestionChange(idx, `option${optIdx}`, e.target.value)
-                    }
-                    className="border p-2 rounded w-full"
-                    required
-                  />
-              ))}
-            </div>
-            <div className="mb-2">
-              <label className="mr-2 font-semibold">Correct Answer:</label>
-              <select
-                value={q.answer}
-                onChange={(e) => handleQuestionChange(idx, "answer", e.target.value)}
-                className="border p-2 rounded"
-              >
-                {[0, 1, 2, 3].map((optIdx) => (
-                  <option key={optIdx} value={optIdx}>
-                    Option {optIdx + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <textarea
-              placeholder="Explanation (optional)"
-              value={q.explanation}
-              onChange={(e) => handleQuestionChange(idx, "explanation", e.target.value)}
-              className="border p-2 rounded w-full"
-              rows={2}
+            <input
+              type="text"
+              placeholder="Chapter"
+              value={form.chapter}
+              onChange={(e) => setForm({ ...form, chapter: e.target.value })}
+              className="input-field"
             />
+            <select
+              value={form.grade}
+              onChange={(e) => setForm({ ...form, grade: e.target.value })}
+              className="input-field"
+            >
+              <option value="10">Grade 10</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+            </select>
+            <select
+              value={form.stream}
+              onChange={(e) => setForm({ ...form, stream: e.target.value })}
+              className="input-field"
+            >
+              <option value="Science">Science</option>
+              <option value="Management">Management</option>
+            </select>
           </div>
-        ))}
+        </div>
 
-        <button
-          onClick={addQuestion}
-          className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
-          type="button"
-        >
-          Add Question
-        </button>
+        {/* Section 2: Questions */}
         <div>
+          <h3 className="text-xl font-semibold mb-4 text-gray-700">Questions</h3>
+          <div className="space-y-6">
+            {form.questions.map((q, idx) => (
+              <div key={idx} className="p-4 border rounded-lg bg-gray-50 relative">
+                <div className="flex justify-between items-center mb-4">
+                  <p className="font-bold text-lg text-gray-800">Question {idx + 1}</p>
+                  <button
+                    onClick={() => removeQuestion(idx)}
+                    className="text-red-600 hover:text-red-800 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={form.questions.length === 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+                <textarea
+                  placeholder="Question text"
+                  value={q.question}
+                  onChange={(e) => handleQuestionChange(idx, "question", e.target.value)}
+                  className="input-field w-full mb-3"
+                  rows={2}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  {q.options.map((opt, optIdx) => (
+                    <input
+                      key={optIdx}
+                      type="text"
+                      placeholder={`Option ${optIdx + 1}`}
+                      value={opt}
+                      onChange={(e) =>
+                        handleQuestionChange(idx, `option${optIdx}`, e.target.value)
+                      }
+                      className="input-field w-full"
+                      required
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center mb-3">
+                  <label className="mr-3 font-semibold text-gray-700">Correct Answer:</label>
+                  <select
+                    value={q.answer}
+                    onChange={(e) => handleQuestionChange(idx, "answer", e.target.value)}
+                    className="input-field w-auto"
+                  >
+                    {[0, 1, 2, 3].map((optIdx) => (
+                      <option key={optIdx} value={optIdx}>
+                        Option {optIdx + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <textarea
+                  placeholder="Explanation (optional)"
+                  value={q.explanation}
+                  onChange={(e) => handleQuestionChange(idx, "explanation", e.target.value)}
+                  className="input-field w-full"
+                  rows={2}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 3: Actions */}
+        <div className="mt-8 pt-6 border-t flex items-center justify-between">
           <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50 mr-4"
+            onClick={addQuestion}
+            className="btn-secondary"
+            type="button"
           >
-            {saving ? "Saving..." : editingQuiz ? "Update Quiz" : "Add Quiz"}
+            Add Another Question
           </button>
-          <button
-            onClick={resetForm}
-            disabled={saving}
-            className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 disabled:opacity-50"
-          >
-            Cancel
-          </button>
+          <div className="flex space-x-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="btn-primary"
+            >
+              {saving ? "Saving..." : editingQuiz ? "Update Quiz" : "Add Quiz"}
+            </button>
+            <button
+              onClick={resetForm}
+              disabled={saving}
+              className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
