@@ -40,8 +40,39 @@ export default function StudentDashboard() {
     <div className="max-w-4xl mx-auto mt-10 p-6">
       <h1 className="text-3xl font-bold mb-6">Your Quiz Attempts</h1>
       <h2 className="text-2xl font-semibold mb-4">Welcome, {user?.name}!</h2>
+      {/* --- QUICK ACTIONS SECTION --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <Link
+          to="/notes"
+          className="card p-6 bg-blue-100 hover:bg-blue-200 transition-colors duration-300 transform hover:-translate-y-1">
+            <h3 className="text-2xl font-bold text-blue-800 mb-2">
+              Browse Notes
+            </h3>
+            <p className="text-blue-700">
+              Find and review notes for all your subjects.
+            </p>
+          </Link>
+          <Link 
+            to="/quiz"
+            className="card p-6 bg-green-100 hover:bg-green-200 transition-colors duration-300 transform hover:translate-y-1">
+              <h3 className="text-2xl font-bold text-green-800 mb-2">
+                Find a New Quiz
+              </h3>
+              <p className="text-green-700">
+                Test your knowledge and prepare for exams.
+              </p>
+            </Link>
+      </div>
+      {/* --- END OF QUICK ACTIONS --- */}
+
+      <h3 className="text-2xl font-bold mb-4">Your Recent Quiz Attempts</h3>
       {attempts.length === 0 ? (
-        <p>No quiz attempts yet.</p>
+        <div className="text-center p-6 border rounded-lg bg-gray-50">
+          <p className="text-gray-600">You haven't attempted any quizzes yet.</p>
+          <Link to="/quiz" className="text-blue-600 hover:underline font-semibold mt-2 inline-block">
+            Attempt your first quiz!
+          </Link>
+        </div>
       ) : (
         <table className="w-full border border-gray-300 rounded">
           <thead>
