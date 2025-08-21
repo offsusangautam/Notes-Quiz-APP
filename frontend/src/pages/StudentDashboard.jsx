@@ -12,11 +12,7 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Removed the setTimeout that hides the score after 5 seconds
-    // if (location.state?.showScore) {
-    //   const timer = setTimeout(() => setShowScore(false), 5000); // Auto-hide score after 5 sec
-    //   return () => clearTimeout(timer);
-    // }
+   
   }, [location.state]);
 
   useEffect(() => {
