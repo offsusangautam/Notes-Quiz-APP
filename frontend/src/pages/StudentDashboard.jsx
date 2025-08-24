@@ -24,7 +24,7 @@ export default function StudentDashboard() {
         console.log("Attempts fetched:", response.data);
         setAttempts(response.data);
       } catch (err) {
-        alert("Failed to load quiz attempts");
+        // Removed disruptive alert for failed attempts loading
         console.error("Error fetching quiz attempts:", err);
       } finally {
         setLoading(false);
