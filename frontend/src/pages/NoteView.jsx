@@ -21,8 +21,8 @@ export default function NoteView() {
 
   return (
     <div className="max-w-4xl mx-auto mt-8 p-6">
-      <h1 className="text-3xl font-bold mb-4">
-        {note.title}
+      <h1 className="text-4xl font-bold mb-4">
+        {note.title} {note.chapter}
       </h1>
       <div
         className="prose max-w-none"

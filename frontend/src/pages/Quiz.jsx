@@ -9,7 +9,8 @@ export default function Quiz() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const grade = searchParams.get("grade") || "10";
-  const stream = searchParams.get("stream") || "Science";
+  const defaultStream = grade === "10" ? "" : "Science";
+  const stream = searchParams.get("stream") ?? defaultStream;
   const subject = searchParams.get("subject") || "";
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Quiz() {
       <div className="flex space-x-4 mb-6">
         <select
           value={grade}
-          onChange={(e) => setSearchParams({ grade: e.target.value, stream, subject })}
+          onChange={(e) => setSearchParams({ grade: e.target.value, stream: e.target.value === "10" ? "" : stream, subject })}
           className="border p-2 rounded"
         >
           <option value="10">Grade 10</option>

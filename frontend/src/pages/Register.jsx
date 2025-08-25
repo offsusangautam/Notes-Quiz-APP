@@ -4,12 +4,16 @@ import api from "../api/api";
 import useAuth from "../hooks/useAuth";
 
 export default function Register() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch } = useForm();
+  const selectedGrade = watch("grade");
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const onSubmit = async (data) => {
     try {
+      if (data.grade === "10") {
+        delete data.stream;
+      }
       const res = await api.post("/auth/register", data);
       login(res.data.token, res.data);
       navigate("/dashboard");
@@ -57,15 +61,16 @@ export default function Register() {
             <option value="11">Grade 11</option>
             <option value="12">Grade 12</option>
           </select>
-          <select
-            {...register("stream", { required: true })}
-            className="input-field"
-            required
-          >
-            <option value="">Select Stream</option>
-            <option value="Science">Science</option>
-            <option value="Management">Management</option>
-          </select>
+          {selectedGrade && selectedGrade !== "10" && (
+            <select
+              {...register("stream", { required: true })}
+              className="input-field"
+            >
+              <option value="">Select Stream</option>
+              <option value="Science">Science</option>
+              <option value="Management">Management</option>
+            </select>
+          )}
           <button type="submit" className="btn-primary w-full">
             Register
           </button>

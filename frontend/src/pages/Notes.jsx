@@ -7,9 +7,11 @@ export default function Notes() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [expanded, setExpanded] = useState({});
 
   const grade = searchParams.get("grade") || "10";
-  const stream = searchParams.get("stream") || "Science";
+  const defaultStream = grade === "10" ? "" : "Science";
+  const stream = searchParams.get("stream") ?? defaultStream;
   const subject = searchParams.get("subject") || "";
 
   useEffect(() => {
@@ -38,21 +40,23 @@ export default function Notes() {
       <div className="flex space-x-4 mb-6">
         <select
           value={grade}
-          onChange={(e) => setSearchParams({ grade: e.target.value, stream, subject })}
+          onChange={(e) => setSearchParams({ grade: e.target.value, stream: e.target.value === "10" ? "" : stream, subject })}
           className="border p-2 rounded"
         >
           <option value="10">Grade 10</option>
           <option value="11">Grade 11</option>
           <option value="12">Grade 12</option>
         </select>
-        <select
-          value={stream}
-          onChange={(e) => setSearchParams({ grade, stream: e.target.value, subject })}
-          className="border p-2 rounded"
-        >
-          <option value="Science">Science</option>
-          <option value="Management">Management</option>
-        </select>
+        {grade !== "10" && (
+          <select
+            value={stream}
+            onChange={(e) => setSearchParams({ grade, stream: e.target.value, subject })}
+            className="border p-2 rounded-xl"
+          >
+            <option value="Science">Science</option>
+            <option value="Management">Management</option>
+          </select>
+        )}
         <input
           type="text"
           placeholder="Subject"
@@ -66,17 +70,33 @@ export default function Notes() {
         <p>No notes found for selected filters.</p>
       ) : (
         <ul className="space-y-4">
-          {notes.map((note) => (
-            <li
-              key={note._id}
-              className="border p-4 rounded hover:shadow cursor-pointer"
-            >
-              <Link
-                to={`/notes/${note._id}`}
-                className="text-xl font-semibold text-blue-700 hover:underline"
+          {Object.entries(notes.reduce((acc, n) => {
+            acc[n.subject] = acc[n.subject] ? [...acc[n.subject], n] : [n];
+            return acc;
+          }, {})).map(([subj, subjNotes]) => (
+            <li key={subj} className="border rounded">
+              <div
+                className="p-4 bg-gray-100 cursor-pointer flex justify-between items-center"
+                onClick={() => setExpanded((e) => ({ ...e, [subj]: !e[subj] }))}
               >
-                {note.subject} - Chapter: {note.chapter}
-              </Link>
+                <span className="text-xl font-semibold">{subj}</span>
+                <span>{expanded[subj] ? "-" : "+"}</span>
+              </div>
+              {expanded[subj] && (
+                <ul className="p-4 space-y-2">
+                  {subjNotes.map((note) => (
+                    <li key={note._id}>
+                      <Link
+                        to={`/notes/${note._id}`}
+                        className="text-blue-700 hover:underline"
+                      >
+                        {note.chapter || note.title}
+                      </Link>
+
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
